@@ -54,13 +54,26 @@ export default {
     },
     mapping(json) {
       const temperatures = json.devicestats.temperature.stats._.split(",");
+
+      const startDate = new Date();
+      // Adjust minutes (15min interval)
+      const minutes = Math.floor(startDate.getMinutes() / 15);
+      startDate.setMinutes(minutes - 1);
+      startDate.setSeconds(0);
+
       let counter = 0;
-      return temperatures.map((temperature) => {
-        return {
-          x: counter++,
-          y: this.calculateTemperature(temperature),
-        };
-      });
+      // (!) reverse temperatures first
+      return temperatures
+        .map((temperature) => {
+          return {
+            x: this.calculateTime(++counter, startDate.getTime()),
+            y: this.calculateTemperature(temperature),
+          };
+        })
+        .reverse();
+    },
+    calculateTime(counter, time) {
+      return new Date(time - counter * 15 * 60 * 1000);
     },
   },
 };

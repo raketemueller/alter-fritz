@@ -53,6 +53,23 @@ export default {
         },
         options: {
           scales: {
+            xAxes: [
+              {
+                type: "time",
+                time: {
+                  unit: "hour",
+                  unitStepSize: 1,
+                  displayFormats: {
+                    hour: "HH:mm",
+                  },
+                },
+                display: true,
+                scaleLabel: {
+                  display: true,
+                  labelString: "Date",
+                },
+              },
+            ],
             yAxes: [
               {
                 ticks: {
