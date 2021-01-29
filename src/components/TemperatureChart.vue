@@ -52,6 +52,7 @@ export default {
           datasets: this.computedDatasets,
         },
         options: {
+          animation: false,
           scales: {
             xAxes: [
               {
@@ -73,8 +74,8 @@ export default {
             yAxes: [
               {
                 ticks: {
-                  max: 40,
-                  min: -5,
+                  max: 30,
+                  min: 10,
                   stepSize: 5,
                 },
               },

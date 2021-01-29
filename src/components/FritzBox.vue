@@ -1,23 +1,20 @@
 <template>
-  <div>
-    <fieldset>
-      <legend>Alter Fr!tz</legend>
-      <div>
-        <temperature-chart
-          v-if="dataContainer.length > 0"
-          :dataContainer="dataContainer"
-        ></temperature-chart>
-      </div>
-      <button v-if="devices == null" @click="getDevices()">load devices</button>
-      <div v-for="device in devices" :key="device.name">
-        <fritz-box-device
-          :sid="sid"
-          :device="device"
-          @temperatureData="addTemperatureToContainer"
-        ></fritz-box-device>
-      </div>
-    </fieldset>
-  </div>
+  <fieldset>
+    <legend>Alter Fr!tz</legend>
+    <div>
+      <temperature-chart
+        v-if="dataContainer.length > 0"
+        :dataContainer="dataContainer"
+      ></temperature-chart>
+    </div>
+    <div v-for="device in devices" :key="device.name">
+      <fritz-box-device
+        :sid="sid"
+        :device="device"
+        @temperatureData="addTemperatureToContainer"
+      ></fritz-box-device>
+    </div>
+  </fieldset>
 </template>
 
 <script>
@@ -31,6 +28,9 @@ export default {
       dataContainer: [],
     };
   },
+  mounted() {
+    this.getDevices();
+  },
   methods: {
     getDevices() {
       const sid = this.sid;
@@ -38,7 +38,7 @@ export default {
 
       this.$http
         .get(
-          `api/webservices/homeautoswitch.lua?0=0&sid=${sid}&switchcmd=${cmd}`
+          `api/fritz/box/webservices/homeautoswitch.lua?0=0&sid=${sid}&switchcmd=${cmd}`
         )
         .then((json) => {
           this.devices = json.devicelist.device.sort((d1, d2) => {
@@ -68,5 +68,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>

@@ -1,24 +1,23 @@
 <template>
-  <div>
-    <fieldset v-if="session.sid">
-      <legend>Session</legend>
-      <p>{{ credentials.usr }} (sid: {{ session.sid }})</p>
-      <p><button @click="logout(session.sid)">logout</button></p>
-    </fieldset>
-    <fieldset v-else>
-      <legend>Login FRITZ!Box</legend>
-      <p><input placeholder="user name" v-model.lazy="credentials.usr" /></p>
-      <p>
-        <input
-          placeholder="password"
-          v-model.lazy="credentials.pwd"
-          type="password"
-        />
-      </p>
-      <p>{{ credentials.challenge }}</p>
-      <button @click="login()">login</button>
-    </fieldset>
-  </div>
+  <fieldset v-if="session.sid">
+    <legend>Session</legend>
+    <p>{{ credentials.usr }} (sid: {{ session.sid }})</p>
+    <p><button @click="logout(session.sid)">logout</button></p>
+  </fieldset>
+  <fieldset v-else>
+    <legend>Login FRITZ!Box</legend>
+    <p><input placeholder="user name" v-model.lazy="credentials.usr" /></p>
+    <p>
+      <input
+        placeholder="password"
+        v-model.lazy="credentials.pwd"
+        type="password"
+        @keypress.enter="login()"
+      />
+    </p>
+    <p>{{ credentials.challenge }}</p>
+    <button @click="login()">login</button>
+  </fieldset>
 </template>
 
 <script>
@@ -59,14 +58,14 @@ export default {
   methods: {
     verifySid(sid) {
       this.$http
-        .get(`api/login_sid.lua?sid=${sid}`)
+        .get(`api/fritz/box/login_sid.lua?sid=${sid}`)
         .then(this.setupSession)
         .catch(console.log);
     },
 
     requestChallenge() {
       return this.$http
-        .get(`api/login_sid.lua`)
+        .get(`api/fritz/box/login_sid.lua`)
         .then((json) => {
           this.credentials.challenge = json.SessionInfo.Challenge;
         })
@@ -80,7 +79,7 @@ export default {
 
       this.$http
         .get(
-          `api/login_sid.lua?username=${this.credentials.usr}&response=${this.challenge_response}`
+          `api/fritz/box/login_sid.lua?username=${this.credentials.usr}&response=${this.challenge_response}`
         )
         .then(this.setupSession)
         .catch(console.log);
@@ -92,7 +91,7 @@ export default {
 
     logout(sid) {
       this.$http
-        .get(`api/login_sid.lua?logout=${sid}`)
+        .get(`api/fritz/box/login_sid.lua?logout=${sid}`)
         .then((json) => {
           // set new challenge
           this.credentials.challenge = json.SessionInfo.Challenge;
@@ -128,3 +127,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+fieldset {
+  text-align: center;
+}
+</style>

@@ -2,7 +2,7 @@
   <fieldset v-if="device">
     <legend>Device {{ name }}</legend>
     <div v-if="temperature">last temp: {{ temperature }}°C</div>
-    <button @click="getTemperature()">load temperature</button>
+    <div v-if="device.battery">battery: {{ device.battery }}%</div>
   </fieldset>
 </template>
 
@@ -30,6 +30,9 @@ export default {
       return this.calculateTemperature(this.device.temperature.celsius);
     },
   },
+  mounted() {
+    this.getTemperature();
+  },
   methods: {
     calculateTemperature(rawTemperature) {
       return (rawTemperature - this.device.temperature.offset) / 10;
@@ -41,10 +44,9 @@ export default {
 
       this.$http
         .get(
-          `api/webservices/homeautoswitch.lua?0=0&sid=${sid}&ain=${ain}&switchcmd=${cmd}`
+          `api/fritz/box/webservices/homeautoswitch.lua?0=0&sid=${sid}&ain=${ain}&switchcmd=${cmd}`
         )
         .then((json) => {
-          //console.log("json: " + JSON.stringify(json));
           this.$emit("temperatureData", {
             name: this.device.name,
             data: this.mapping(json),
@@ -78,3 +80,13 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+fieldset {
+  float: left;
+  width: 28%;
+  margin: 1%;
+  padding: 1%;
+  text-align: center;
+}
+</style>
